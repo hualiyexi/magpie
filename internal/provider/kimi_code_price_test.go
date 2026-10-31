@@ -10,10 +10,11 @@ import (
 )
 
 // useKimiCodeCatalog puts testdata/kimi_code_catalog.json in the catalog
-// cache: models.dev's own entries (2026-10-09) for moonshotai and both Kimi
-// Code plans, which list k3, k3-256k, kimi-for-coding and
-// kimi-for-coding-highspeed at $0, beside gpt-6-luna and a free OpenCode
-// model; plus a relay's catalog that lists a "k3" of its own at $0.
+// cache: models.dev's own entries (2026-10-31) for moonshotai and both Kimi
+// Code plans, which list k3, k3-256k, k3.1-pro, k3.1-pro-highspeed,
+// kimi-for-coding and kimi-for-coding-highspeed at $0, beside gpt-6-luna
+// and a free OpenCode model; plus a relay's catalog that lists a "k3" of
+// its own at $0.
 func useKimiCodeCatalog(t *testing.T) {
 	t.Helper()
 	home := t.TempDir()
@@ -49,13 +50,19 @@ func useKimiCodeCatalog(t *testing.T) {
 func TestKimiCodeListPrice(t *testing.T) {
 	useKimiCodeCatalog(t)
 	k3 := catalog.Price{Input: 3, Output: 15, CacheRead: 0.3, CacheWrite: 3}
+	k31 := catalog.Price{Input: 2, Output: 10, CacheRead: 0.2, CacheWrite: 2}
+	k31highspeed := catalog.Price{Input: 4, Output: 20, CacheRead: 0.2, CacheWrite: 4}
 	highspeed := catalog.Price{Input: 1.9, Output: 8, CacheRead: 0.38}
 	for _, preset := range []string{"kimi-code", "kimi-code-cn"} {
 		p, err := FromPreset(preset)
 		if err != nil {
 			t.Fatal(err)
 		}
-		for model, want := range map[string]catalog.Price{"k3": k3, "K3": k3, "k3-256k": k3, "kimi-for-coding-highspeed": highspeed} {
+		for model, want := range map[string]catalog.Price{
+			"k3": k3, "K3": k3, "k3-256k": k3,
+			"k3.1-pro": k31, "K3.1-Pro": k31, "k3.1-pro-highspeed": k31highspeed,
+			"kimi-for-coding-highspeed": highspeed,
+		} {
 			if pr, ok := p.ListPrice(model); !ok || !pr.Same(want) {
 				t.Errorf("%s %s: %+v %v, want %+v", preset, model, pr, ok, want)
 			}
@@ -99,6 +106,9 @@ func TestKimiCodeListPrice(t *testing.T) {
 	}
 	if got := PricedNameFor("kimi-code-cn", "k3-256k"); got != "kimi-k3" {
 		t.Errorf("PricedNameFor(kimi-code-cn, k3-256k) = %q", got)
+	}
+	if got := PricedNameFor("kimi-code-cn", "k3.1-pro"); got != "kimi-k3.1-pro" {
+		t.Errorf("PricedNameFor(kimi-code-cn, k3.1-pro) = %q", got)
 	}
 	if got := PricedNameFor("relay", "k3"); got != "k3" {
 		t.Errorf("PricedNameFor(relay, k3) = %q", got)

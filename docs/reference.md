@@ -1279,7 +1279,8 @@ one with `magpie model price`, or in the provider's editor under the model.
 
 A **Kimi Code** membership's models are counted at the Kimi API model each
 one is, not at the $0 models.dev lists them at for the plan: `k3` and
-`k3-256k` at `kimi-k3`, `kimi-for-coding-highspeed` at
+`k3-256k` at `kimi-k3`, `k3.1-pro` at `kimi-k3.1-pro`, `k3.1-pro-highspeed`
+at `kimi-k3.1-pro-highspeed`, `kimi-for-coding-highspeed` at
 `kimi-k2.7-code-highspeed`. `kimi-for-coding` is K2.8 Preview, which the API
 doesn't sell, so it has no price until you give it one
 (`magpie model price kimi-code/kimi-for-coding …`).
