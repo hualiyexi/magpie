@@ -2552,14 +2552,25 @@ var grokWindow = regexp.MustCompile(`^((?:.*/)?grok-[0-9][^/@]*)@[0-9]+k?$`)
 // according to OpenAI's rate card (2026-09-30):
 // https://help.openai.com/en/articles/11481834-chatgpt-rate-card-business-enterpriseedu-credit-based-pricing
 // This is a list-price estimate, not evidence of a response's served model.
-// Other names without catalog prices stay unpriced here (grok-4.7-build,
-// grok-4.7-mini, grok-4.7-fast); a Cursor account's fast ids are priced at
-// Cursor's own fast rate (Provider.cursorFastPrice), and a Grok account's
-// grok-4.7-build-fast at twice grok-4.7's (Provider.grokFastPrice).
+// DeepSeek sells V4.1 Flash as deepseek-flash alone (api-docs.deepseek.com
+// /updates, 2026-09-10), and the canonical_model_id models.dev gives that
+// entry has moved before (deepseek/deepseek-v4.1-flash at #1520,
+// deepseek/deepseek-v4.1-flash-1017 since its 10-17 snapshot), so a vendor
+// serving the id as given — WorkBuddy's subscription, a relay — was priced
+// by the canonical while it said so and unpriced once it didn't: its
+// maker's own listing by its own id is the price that holds whatever
+// models.dev names the canonical. Other names without catalog prices stay
+// unpriced here (grok-4.7-build, grok-4.7-mini, grok-4.7-fast); a Cursor
+// account's fast ids are priced at Cursor's own fast rate
+// (Provider.cursorFastPrice), and a Grok account's grok-4.7-build-fast at
+// twice grok-4.7's (Provider.grokFastPrice).
 func pricedNames(model string) []string {
 	out := []string{model}
 	if model == "codex-auto-review" {
 		out = append(out, "gpt-5.6-luna")
+	}
+	if l := strings.ToLower(strings.TrimSpace(model)); l == "deepseek-v4.1-flash" || l == "deepseek/deepseek-v4.1-flash" {
+		out = append(out, "deepseek-flash")
 	}
 	if m := grokWindow.FindStringSubmatch(strings.ToLower(strings.TrimSpace(model))); m != nil {
 		out = append(out, m[1])
